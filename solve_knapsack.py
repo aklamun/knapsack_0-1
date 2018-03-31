@@ -61,6 +61,15 @@ def solve_knapsack_MIM(items, v, w, W):
     S2 = recover_subset(B, wvB_ind[j])
     return max_v, list(S1+S2)
 
+def solve_knapsack_approx(items, v, w, W, eps):
+    '''approximate knapsack 0-1 solution by rescaling weights, eps in (0,1)
+    In general, this is not FPTAS (there is another approx that achieves that), but it is if w=v'''
+    n = len(items)
+    K = eps*W/n
+    wp = [int(np.ceil(w[i]/K)) for i in range(n)]
+    Wp = int(np.floor(W/K))
+    return solve_knapsack_DP(items,v,wp,Wp)
+
 ###############################################################################
     
 def powerset(items):
@@ -141,6 +150,8 @@ def recover_subset(A, i):
 
 ###############################################################################
 
+
+
 #test Knapsack solvers
 items = list(range(10))
 W = 7897
@@ -148,7 +159,10 @@ v = [438, 33, 33857, 4729, 9, 19, 14, 310, 32, 44]
 w = [438, 33, 33857, 4729, 9, 19, 14, 310, 32, 44]
 max_v1, max_it1 = solve_knapsack_DP(items,v,w,W)
 max_v2, max_it2 = solve_knapsack_MIM(items,v,w,W)
+eps = 0.9
+max_v3, max_it3 = solve_knapsack_approx(items,v,w,W,eps)
 print(max_v1 == max_v2)
+print(max_v3 > max_v2*eps)
 
 items = list(range(10))
 W = 5
@@ -156,4 +170,13 @@ w = [4,4,4,2,2,2,8,8,8,1]
 v = [1,0,3,3,1,2,8,7,9,0]
 max_v1, max_it1 = solve_knapsack_DP(items,v,w,W)
 max_v2, max_it2 = solve_knapsack_MIM(items,v,w,W)
+max_v3, max_it3 = solve_knapsack_approx(items,v,w,W,eps=0.9)
 print(max_v1 == max_v2)
+print(max_v3 > max_v2*eps)
+
+#This example is hard for the exact solvers, but easy for the approximate solver
+items = list(range(109))
+W = 231417
+w = [552, 16, 28642, 90, 2795, 761411, 73228, 2575, 9821, 8083, 40, 653, 1, 212, 27, 417, 3384, 1173, 148, 5, 253, 24, 11, 122, 356, 1, 1, 21, 2, 1343, 2, 67, 5950, 1, 550, 26, 3131, 4431, 5, 5034, 601, 2072, 27, 1, 16, 12, 4089, 22266, 915, 5, 2754, 90, 531, 8, 38, 1058, 1452, 407, 15021, 7, 72364, 518, 18483, 42, 9916, 205, 1651, 82, 1, 9370, 2598, 743, 8164, 555, 4177, 50, 20, 1110, 2182, 7, 223, 1090, 1, 85, 12, 654, 12, 1334, 444, 10, 102, 579, 1171, 240, 1767, 1433, 28, 50, 1190, 793, 167, 537, 1321, 1938, 1051, 27833, 9, 4634, 10081, 62, 26]
+v = w[:]
+max_v3, max_it3 = solve_knapsack_approx(items,v,w,W,eps=0.3)
