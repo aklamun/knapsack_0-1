@@ -135,12 +135,11 @@ def best_subsets(wvA, wvB, W):
 def recover_subset(A, i):
     '''return ith subset of powerset of A'''
     psA = powerset(A)
-    for j in range(i):
+    for j in range(i+1):
         S = next(psA)
     return S
 
 ###############################################################################
-
 
 #test Knapsack solvers
 items = list(range(10))
